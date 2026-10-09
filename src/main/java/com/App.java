@@ -3,6 +3,7 @@ package com;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
@@ -25,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -58,7 +60,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * MEDIA PLAYER
+     * MEDIA
      * =========================================================
      */
 
@@ -71,18 +73,6 @@ public class App extends Application {
      * =========================================================
      * AUDIO VISUALIZER
      * =========================================================
-     *
-     * This replaces the old:
-     *
-     * "Audio playing..."
-     *
-     * message.
-     *
-     * It is made completely with JavaFX shapes.
-     *
-     * No image.
-     * No URL.
-     * No external resource.
      */
 
     private final StackPane audioVisual =
@@ -92,7 +82,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * UI LABELS
+     * LABELS
      * =========================================================
      */
 
@@ -100,7 +90,7 @@ public class App extends Application {
             new Label("No media selected");
 
     private final Label artistLabel =
-            new Label("Nova Media Player");
+            new Label("Spotfire Media Player");
 
     private final Label timeLabel =
             new Label("00:00 / 00:00");
@@ -122,7 +112,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * PLAYER SLIDERS
+     * SLIDERS
      * =========================================================
      */
 
@@ -134,7 +124,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * PLAYER BUTTONS
+     * BUTTONS
      * =========================================================
      */
 
@@ -167,15 +157,11 @@ public class App extends Application {
 
     private boolean updatingProgress = false;
 
-    /*
-     * Prevent duplicate media-error dialogs.
-     */
-
     private boolean mediaErrorShown = false;
 
     /*
      * =========================================================
-     * START APPLICATION
+     * START
      * =========================================================
      */
 
@@ -186,83 +172,32 @@ public class App extends Application {
 
         root.getStyleClass().add("root");
 
-        /*
-         * HEADER
-         */
+        root.setTop(buildHeader(stage));
+        root.setLeft(buildSidebar());
+        root.setCenter(buildMainContent());
+        root.setRight(buildPlaylistPanel());
+        root.setBottom(buildBottomPlaylist());
 
-        root.setTop(
-                buildHeader(stage)
-        );
-
-        /*
-         * LEFT SIDEBAR
-         */
-
-        root.setLeft(
-                buildSidebar()
-        );
-
-        /*
-         * MAIN CONTENT
-         */
-
-        root.setCenter(
-                buildMainContent()
-        );
-
-        /*
-         * RIGHT PLAYLIST
-         */
-
-        root.setRight(
-                buildPlaylistPanel()
-        );
-
-        /*
-         * BOTTOM PLAYLIST
-         */
-
-        root.setBottom(
-                buildBottomPlaylist()
-        );
-
-        /*
-         * SCENE
-         */
-
+        // Reduced window size to fit under 1000x650
         Scene scene = new Scene(
                 root,
-                1280,
-                800
+                950,
+                620
         );
-
-        /*
-         * LOAD LOCAL CSS
-         */
 
         loadStylesheet(scene);
 
-        /*
-         * KEYBOARD CONTROLS
-         */
-
         installKeyboardControls(scene);
 
-        /*
-         * WINDOW
-         */
+        stage.setTitle("SPOTFIRE Media Player");
 
-        stage.setTitle(
-                "NOVA Media Player"
-        );
-
-        stage.setMinWidth(1000);
-        stage.setMinHeight(650);
+        stage.setMinWidth(820);
+        stage.setMinHeight(560);
 
         stage.setScene(scene);
 
-        stage.setWidth(1280);
-        stage.setHeight(800);
+        stage.setWidth(950);
+        stage.setHeight(620);
 
         stage.centerOnScreen();
 
@@ -271,17 +206,11 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * LOAD CSS
+     * CSS
      * =========================================================
      */
 
     private void loadStylesheet(Scene scene) {
-
-        /*
-         * Preferred:
-         *
-         * src/main/resources/com/styles.css
-         */
 
         if (getClass().getResource("styles.css") != null) {
 
@@ -293,12 +222,6 @@ public class App extends Application {
 
             return;
         }
-
-        /*
-         * Alternative:
-         *
-         * src/main/resources/styles.css
-         */
 
         if (getClass().getResource("/styles.css") != null) {
 
@@ -312,8 +235,7 @@ public class App extends Application {
         }
 
         System.out.println(
-                "NOVA: styles.css was not found. "
-                        + "Default JavaFX styling will be used."
+                "SPOTFIRE: styles.css was not found."
         );
     }
 
@@ -325,68 +247,39 @@ public class App extends Application {
 
     private HBox buildHeader(Stage stage) {
 
-        HBox header =
-                new HBox(22);
+        HBox header = new HBox(18);
 
-        header.setAlignment(
-                Pos.CENTER_LEFT
-        );
+        header.setAlignment(Pos.CENTER_LEFT);
 
-        header.getStyleClass().add(
-                "header"
-        );
+        header.getStyleClass().add("header");
 
         header.setPadding(
                 new Insets(
-                        16,
-                        24,
-                        16,
-                        30
+                        12,
+                        20,
+                        12,
+                        22
                 )
         );
 
-        /*
-         * LOGO
-         */
+        Label logoIcon = new Label("▶");
 
-        Label logoIcon =
-                new Label("▶");
+        logoIcon.getStyleClass().add("logo-icon");
 
-        logoIcon.getStyleClass().add(
-                "logo-icon"
-        );
+        Label nova = new Label("SPOTFIRE");
 
-        Label nova =
-                new Label("NOVA");
+        nova.getStyleClass().add("logo-text");
 
-        nova.getStyleClass().add(
-                "logo-text"
-        );
+        Label subtitle = new Label("Media Player");
 
-        Label subtitle =
-                new Label(
-                        "Media Player"
-                );
+        subtitle.getStyleClass().add("header-subtitle");
 
-        subtitle.getStyleClass().add(
-                "header-subtitle"
-        );
-
-        /*
-         * SPACER
-         */
-
-        Region spacer =
-                new Region();
+        Region spacer = new Region();
 
         HBox.setHgrow(
                 spacer,
                 Priority.ALWAYS
         );
-
-        /*
-         * SEARCH
-         */
 
         searchField.setPromptText(
                 "Search media, artists, or files..."
@@ -396,84 +289,13 @@ public class App extends Application {
                 "search-field"
         );
 
-        searchField.setPrefWidth(380);
-        searchField.setMinWidth(180);
-        searchField.setMaxWidth(500);
+        searchField.setPrefWidth(300);
+        searchField.setMinWidth(150);
+        searchField.setMaxWidth(420);
 
         searchField.textProperty().addListener(
                 (obs, oldValue, newValue) ->
                         filterPlaylist(newValue)
-        );
-
-        Label shortcut =
-                new Label(
-                        "⌨  Ctrl + K"
-                );
-
-        shortcut.getStyleClass().add(
-                "shortcut-pill"
-        );
-
-        /*
-         * SETTINGS
-         */
-
-        Button settings =
-                new Button("⚙");
-
-        settings.getStyleClass().add(
-                "header-button"
-        );
-
-        settings.setOnAction(
-                e -> showSettings()
-        );
-
-        /*
-         * MAXIMIZE
-         */
-
-        Button maximize =
-                new Button("↗");
-
-        maximize.getStyleClass().add(
-                "header-button"
-        );
-
-        maximize.setOnAction(
-                e -> stage.setMaximized(
-                        !stage.isMaximized()
-                )
-        );
-
-        /*
-         * MINIMIZE
-         */
-
-        Button minimize =
-                new Button("—");
-
-        minimize.getStyleClass().add(
-                "header-button"
-        );
-
-        minimize.setOnAction(
-                e -> stage.setIconified(true)
-        );
-
-        /*
-         * CLOSE
-         */
-
-        Button close =
-                new Button("×");
-
-        close.getStyleClass().add(
-                "header-button"
-        );
-
-        close.setOnAction(
-                e -> stage.close()
         );
 
         header.getChildren().addAll(
@@ -481,12 +303,7 @@ public class App extends Application {
                 nova,
                 subtitle,
                 spacer,
-                searchField,
-                shortcut,
-                settings,
-                maximize,
-                minimize,
-                close
+                searchField
         );
 
         return header;
@@ -500,23 +317,28 @@ public class App extends Application {
 
     private void showSettings() {
 
-        Alert alert =
-                new Alert(
-                        Alert.AlertType.INFORMATION,
-                        "NOVA Media Player\n\n"
-                                + "Local audio and video playback "
-                                + "is supported.\n\n"
-                                + "Recommended video format:\n"
-                                + "MP4 + H.264 video + AAC audio.",
-                        ButtonType.OK
-                );
-
-        alert.setTitle(
-                "NOVA Settings"
+        Alert alert = new Alert(
+                Alert.AlertType.INFORMATION,
+                "SPOTFIRE Media Player\n\n"
+                        + "Local audio and video playback "
+                        + "is supported.\n\n"
+                        + "You can add local media files "
+                        + "using the Add Media button.\n\n"
+                        + "Keyboard Controls:\n"
+                        + "Space - Play / Pause\n"
+                        + "S - Stop\n"
+                        + "N - Next\n"
+                        + "P - Previous\n"
+                        + "Up Arrow - Volume Up\n"
+                        + "Down Arrow - Volume Down\n"
+                        + "M - Mute / Unmute",
+                ButtonType.OK
         );
 
+        alert.setTitle("SPOTFIRE Settings");
+
         alert.setHeaderText(
-                "NOVA Media Player"
+                "SPOTFIRE Media Player"
         );
 
         alert.showAndWait();
@@ -530,25 +352,22 @@ public class App extends Application {
 
     private VBox buildSidebar() {
 
-        VBox side =
-                new VBox(12);
+        VBox side = new VBox(10);
 
-        side.getStyleClass().add(
-                "sidebar"
-        );
+        side.getStyleClass().add("sidebar");
 
         side.setPadding(
                 new Insets(
-                        26,
-                        18,
-                        18,
-                        18
+                        20,
+                        14,
+                        14,
+                        14
                 )
         );
 
-        side.setPrefWidth(210);
-        side.setMinWidth(180);
-        side.setMaxWidth(230);
+        side.setPrefWidth(190);
+        side.setMinWidth(160);
+        side.setMaxWidth(210);
 
         side.getChildren().addAll(
 
@@ -577,10 +396,7 @@ public class App extends Application {
                 )
         );
 
-        Label my =
-                new Label(
-                        "MY PLAYLISTS"
-                );
+        Label my = new Label("MY PLAYLISTS");
 
         my.getStyleClass().add(
                 "section-label"
@@ -589,15 +405,14 @@ public class App extends Application {
         VBox.setMargin(
                 my,
                 new Insets(
-                        22,
+                        18,
                         0,
                         4,
-                        16
+                        12
                 )
         );
 
-        Button addPlaylist =
-                new Button("+");
+        Button addPlaylist = new Button("+");
 
         addPlaylist.getStyleClass().add(
                 "plus-button"
@@ -607,20 +422,18 @@ public class App extends Application {
                 e -> showPlaylistMessage()
         );
 
-        Region playlistSpacer =
-                new Region();
+        Region playlistSpacer = new Region();
 
         HBox.setHgrow(
                 playlistSpacer,
                 Priority.ALWAYS
         );
 
-        HBox playlistTitle =
-                new HBox(
-                        my,
-                        playlistSpacer,
-                        addPlaylist
-                );
+        HBox playlistTitle = new HBox(
+                my,
+                playlistSpacer,
+                addPlaylist
+        );
 
         playlistTitle.setAlignment(
                 Pos.CENTER_LEFT
@@ -671,10 +484,9 @@ public class App extends Application {
             String text,
             boolean selected) {
 
-        Button button =
-                new Button(
-                        icon + "    " + text
-                );
+        Button button = new Button(
+                icon + "    " + text
+        );
 
         button.setMaxWidth(
                 Double.MAX_VALUE
@@ -709,40 +521,35 @@ public class App extends Application {
             String name,
             String count) {
 
-        Label iconLabel =
-                new Label(icon);
+        Label iconLabel = new Label(icon);
 
         iconLabel.getStyleClass().add(
                 "category-icon"
         );
 
-        Label nameLabel =
-                new Label(name);
+        Label nameLabel = new Label(name);
 
         nameLabel.getStyleClass().add(
                 "category-name"
         );
 
-        Label countLabel =
-                new Label(count);
+        Label countLabel = new Label(count);
 
         countLabel.getStyleClass().add(
                 "category-count"
         );
 
-        VBox text =
-                new VBox(
-                        3,
-                        nameLabel,
-                        countLabel
-                );
+        VBox text = new VBox(
+                3,
+                nameLabel,
+                countLabel
+        );
 
-        HBox box =
-                new HBox(
-                        14,
-                        iconLabel,
-                        text
-                );
+        HBox box = new HBox(
+                12,
+                iconLabel,
+                text
+        );
 
         box.setAlignment(
                 Pos.CENTER_LEFT
@@ -750,10 +557,10 @@ public class App extends Application {
 
         box.setPadding(
                 new Insets(
+                        6,
                         8,
-                        10,
-                        8,
-                        10
+                        6,
+                        8
                 )
         );
 
@@ -768,58 +575,40 @@ public class App extends Application {
 
     private VBox buildMainContent() {
 
-        VBox main =
-                new VBox(16);
+        VBox main = new VBox(12);
 
-        main.getStyleClass().add(
-                "main"
-        );
+        main.getStyleClass().add("main");
 
         main.setPadding(
                 new Insets(
-                        20,
-                        22,
-                        18,
-                        22
+                        14,
+                        16,
+                        14,
+                        16
                 )
         );
 
-        /*
-         * PAGE TITLE
-         */
-
-        Label now =
-                new Label(
-                        "Now Playing"
-                );
+        Label now = new Label("Now Playing");
 
         now.getStyleClass().add(
                 "page-title"
         );
 
-        /*
-         * =====================================================
-         * MEDIA CARD
-         * =====================================================
-         */
-
-        StackPane videoCard =
-                new StackPane();
+        StackPane videoCard = new StackPane();
 
         videoCard.getStyleClass().add(
                 "video-card"
         );
 
-        videoCard.setMinHeight(280);
-        videoCard.setPrefHeight(380);
+        videoCard.setMinHeight(180);
+        videoCard.setPrefHeight(240);
 
         /*
-         * =====================================================
-         * REAL VIDEO VIEW
-         * =====================================================
+         * VIDEO VIEW
          */
 
         mediaView.setPreserveRatio(true);
+        mediaView.setSmooth(true);
 
         mediaView.fitWidthProperty().bind(
                 videoCard.widthProperty()
@@ -838,17 +627,7 @@ public class App extends Application {
         );
 
         /*
-         * =====================================================
-         * BEAUTIFUL AUDIO VISUALIZER
-         * =====================================================
-         *
-         * This is what appears when an audio file is playing.
-         *
-         * It is NOT an image.
-         *
-         * It is NOT text.
-         *
-         * It is made entirely from JavaFX shapes.
+         * AUDIO VISUALIZER
          */
 
         buildAudioVisualizer();
@@ -860,12 +639,6 @@ public class App extends Application {
         videoCard.getChildren().add(
                 audioVisual
         );
-
-        /*
-         * =====================================================
-         * EMPTY / LOADING MESSAGE
-         * =====================================================
-         */
 
         emptyVideoLabel.getStyleClass().add(
                 "empty-video"
@@ -889,51 +662,45 @@ public class App extends Application {
                 "media-subtitle"
         );
 
-        Label type =
-                new Label("Media");
+        Label type = new Label("Media");
 
         type.getStyleClass().add(
                 "tag"
         );
 
-        HBox detailsRow =
-                new HBox(
-                        12,
-                        titleLabel,
-                        type
-                );
+        HBox detailsRow = new HBox(
+                12,
+                titleLabel,
+                type
+        );
 
         detailsRow.setAlignment(
                 Pos.CENTER_LEFT
         );
 
-        VBox information =
-                new VBox(
-                        5,
-                        detailsRow,
-                        artistLabel
-                );
+        VBox information = new VBox(
+                5,
+                detailsRow,
+                artistLabel
+        );
 
         /*
          * ACTION BUTTONS
          */
 
-        HBox actionRow =
-                new HBox(10);
+        HBox actionRow = new HBox(10);
 
         actionRow.setAlignment(
                 Pos.CENTER_RIGHT
         );
 
-        Button favorite =
-                new Button("♡");
+        Button favorite = new Button("♡");
 
         favorite.getStyleClass().add(
                 "round-action"
         );
 
-        Button more =
-                new Button("•••");
+        Button more = new Button("•••");
 
         more.getStyleClass().add(
                 "round-action"
@@ -945,11 +712,10 @@ public class App extends Application {
         );
 
         /*
-         * TRANSPORT CONTROLS
+         * TRANSPORT
          */
 
-        HBox controls =
-                new HBox(28);
+        HBox controls = new HBox(20);
 
         controls.setAlignment(
                 Pos.CENTER
@@ -985,6 +751,8 @@ public class App extends Application {
                 e -> toggleMute()
         );
 
+        mute.setPadding(new Insets(0, 0, 0, 30));
+
         controls.getChildren().addAll(
                 previous,
                 stop,
@@ -997,14 +765,13 @@ public class App extends Application {
          * PROGRESS
          */
 
-        HBox progressRow =
-                new HBox(12);
+        HBox progressRow = new HBox(10);
 
         progressRow.setAlignment(
                 Pos.CENTER_LEFT
         );
 
-        progress.setMinWidth(100);
+        progress.setMinWidth(80);
 
         progress.setMaxWidth(
                 Double.MAX_VALUE
@@ -1022,30 +789,32 @@ public class App extends Application {
 
         /*
          * VOLUME
+         *
+         * Redesigned to look distinct from the transport row.
          */
 
-        HBox volumeRow =
-                new HBox(12);
+        HBox volumeRow = new HBox(12);
 
         volumeRow.setAlignment(
                 Pos.CENTER_LEFT
         );
 
-        Label speaker =
-                new Label("🔊");
-
-        speaker.getStyleClass().add(
-                "small-icon"
+        volumeRow.setPadding(new Insets(8, 14, 8, 14));
+        volumeRow.setStyle(
+                "-fx-background-color: rgba(124, 92, 255, 0.08);" +
+                "-fx-background-radius: 8;"
         );
 
-        volume.setMaxWidth(
-                Double.MAX_VALUE
+        Label volumeTitle = new Label("Volume");
+        volumeTitle.setStyle(
+                "-fx-text-fill: #a0a0a0;" +
+                "-fx-font-size: 12px;" +
+                "-fx-font-weight: bold;"
         );
 
-        HBox.setHgrow(
-                volume,
-                Priority.ALWAYS
-        );
+        volume.setMaxWidth(Double.MAX_VALUE);
+        volume.setPrefWidth(300);
+        HBox.setHgrow(volume, Priority.ALWAYS);
 
         volume.valueProperty().addListener(
                 (obs, oldValue, newValue) -> {
@@ -1073,19 +842,24 @@ public class App extends Application {
                 }
         );
 
-        Label quiet =
-                new Label("🔇");
+        volumeLabel.setStyle(
+                "-fx-text-fill: #7c5cff;" +
+                "-fx-font-weight: bold;" +
+                "-fx-font-size: 12px;"
+        );
+
+        Label quiet = new Label("🔇");
+        quiet.setStyle(
+                "-fx-font-size: 12px;" +
+                "-fx-text-fill: #666666;"
+        );
 
         volumeRow.getChildren().addAll(
-                speaker,
+                volumeTitle,
                 volume,
                 volumeLabel,
                 quiet
         );
-
-        /*
-         * ADD TO MAIN
-         */
 
         main.getChildren().addAll(
                 now,
@@ -1107,26 +881,15 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * BUILD AUDIO VISUALIZER
+     * AUDIO VISUALIZER
      * =========================================================
-     *
-     * A NOVA-style purple / blue music visual.
-     *
-     * The center looks like a glowing audio disc.
-     *
-     * The bars animate while audio is playing.
      */
 
     private void buildAudioVisualizer() {
 
         audioVisual.getChildren().clear();
 
-        /*
-         * OUTER GLOW
-         */
-
-        Circle glow =
-                new Circle(105);
+        Circle glow = new Circle(105);
 
         glow.setFill(
                 Color.rgb(
@@ -1149,12 +912,7 @@ public class App extends Application {
                 )
         );
 
-        /*
-         * MAIN DISC
-         */
-
-        Circle disc =
-                new Circle(82);
+        Circle disc = new Circle(82);
 
         disc.setFill(
                 Color.rgb(
@@ -1187,12 +945,7 @@ public class App extends Application {
                 )
         );
 
-        /*
-         * INNER DISC
-         */
-
-        Circle innerDisc =
-                new Circle(57);
+        Circle innerDisc = new Circle(57);
 
         innerDisc.setFill(
                 Color.rgb(
@@ -1214,12 +967,7 @@ public class App extends Application {
 
         innerDisc.setStrokeWidth(2);
 
-        /*
-         * CENTER
-         */
-
-        Circle center =
-                new Circle(10);
+        Circle center = new Circle(10);
 
         center.setFill(
                 Color.rgb(
@@ -1241,31 +989,15 @@ public class App extends Application {
                 )
         );
 
-        /*
-         * =====================================================
-         * EQUALIZER BARS
-         * =====================================================
-         */
-
-        HBox bars =
-                new HBox(7);
+        HBox bars = new HBox(7);
 
         bars.setAlignment(
                 Pos.CENTER
         );
 
         double[] heights = {
-                28,
-                48,
-                72,
-                42,
-                88,
-                55,
-                76,
-                38,
-                64,
-                45,
-                82
+                28, 48, 72, 42, 88,
+                55, 76, 38, 64, 45, 82
         };
 
         Color[] barColors = {
@@ -1314,16 +1046,6 @@ public class App extends Application {
                     )
             );
 
-            /*
-             * Start slightly smaller.
-             */
-
-            bar.setScaleY(0.45);
-
-            /*
-             * Animate each bar differently.
-             */
-
             ScaleTransition animation =
                     new ScaleTransition(
                             Duration.millis(
@@ -1341,30 +1063,14 @@ public class App extends Application {
                     Animation.INDEFINITE
             );
 
-            /*
-             * Stagger the bars.
-             */
-
             animation.setDelay(
-                    Duration.millis(
-                            i * 70
-                    )
+                    Duration.millis(i * 70)
             );
 
-            animations.add(
-                    animation
-            );
+            animations.add(animation);
 
-            bars.getChildren().add(
-                    bar
-            );
+            bars.getChildren().add(bar);
         }
-
-        /*
-         * =====================================================
-         * ADD VISUAL ELEMENTS
-         * =====================================================
-         */
 
         audioVisual.getChildren().addAll(
                 glow,
@@ -1373,12 +1079,6 @@ public class App extends Application {
                 bars,
                 center
         );
-
-        /*
-         * =====================================================
-         * ANIMATION CONTROLLER
-         * =====================================================
-         */
 
         audioAnimation =
                 new ParallelTransition();
@@ -1394,7 +1094,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * SHOW AUDIO VISUAL
+     * AUDIO VISUAL
      * =========================================================
      */
 
@@ -1411,12 +1111,6 @@ public class App extends Application {
             audioAnimation.play();
         }
     }
-
-    /*
-     * =========================================================
-     * HIDE AUDIO VISUAL
-     * =========================================================
-     */
 
     private void hideAudioVisual() {
 
@@ -1443,14 +1137,13 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * RIGHT PLAYLIST
+     * PLAYLIST PANEL
      * =========================================================
      */
 
     private VBox buildPlaylistPanel() {
 
-        VBox panel =
-                new VBox(12);
+        VBox panel = new VBox(10);
 
         panel.getStyleClass().add(
                 "playlist-panel"
@@ -1458,40 +1151,32 @@ public class App extends Application {
 
         panel.setPadding(
                 new Insets(
-                        24,
                         18,
-                        16,
-                        18
+                        14,
+                        14,
+                        14
                 )
         );
 
-        panel.setPrefWidth(270);
-        panel.setMinWidth(240);
-        panel.setMaxWidth(310);
+        panel.setPrefWidth(230);
+        panel.setMinWidth(200);
+        panel.setMaxWidth(260);
 
-        /*
-         * HEADING
-         */
+        HBox heading = new HBox();
 
-        HBox heading =
-                new HBox();
-
-        Label label =
-                new Label("Playlist");
+        Label label = new Label("Playlist");
 
         label.getStyleClass().add(
                 "panel-title"
         );
 
-        Label count =
-                new Label("0 items");
+        Label count = new Label("0 items");
 
         count.getStyleClass().add(
                 "item-count"
         );
 
-        Region spacer =
-                new Region();
+        Region spacer = new Region();
 
         HBox.setHgrow(
                 spacer,
@@ -1510,23 +1195,13 @@ public class App extends Application {
                         .asString("%d items")
         );
 
-        /*
-         * LIST VIEW
-         */
-
         playlistView.setPlaceholder(
-                new Label(
-                        "No media yet"
-                )
+                new Label("No media yet")
         );
 
         playlistView.getStyleClass().add(
                 "playlist-view"
         );
-
-        /*
-         * CELLS
-         */
 
         playlistView.setCellFactory(
                 view -> new ListCell<File>() {
@@ -1585,7 +1260,7 @@ public class App extends Application {
 
                         HBox row =
                                 new HBox(
-                                        12,
+                                        10,
                                         playIcon,
                                         meta
                                 );
@@ -1598,10 +1273,6 @@ public class App extends Application {
                     }
                 }
         );
-
-        /*
-         * SELECTING A MEDIA FILE PLAYS IT.
-         */
 
         playlistView
                 .getSelectionModel()
@@ -1625,9 +1296,7 @@ public class App extends Application {
          */
 
         Button add =
-                new Button(
-                        "+  Add Media"
-                );
+                new Button("+  Add Media");
 
         add.getStyleClass().add(
                 "add-button"
@@ -1642,9 +1311,7 @@ public class App extends Application {
          */
 
         Button remove =
-                new Button(
-                        "▢  Remove"
-                );
+                new Button("▢  Remove");
 
         remove.getStyleClass().add(
                 "remove-button"
@@ -1674,7 +1341,7 @@ public class App extends Application {
 
         HBox actions =
                 new HBox(
-                        10,
+                        8,
                         add,
                         remove
                 );
@@ -1702,7 +1369,7 @@ public class App extends Application {
     private HBox buildBottomPlaylist() {
 
         HBox bottom =
-                new HBox(18);
+                new HBox(14);
 
         bottom.getStyleClass().add(
                 "bottom-strip"
@@ -1710,10 +1377,10 @@ public class App extends Application {
 
         bottom.setPadding(
                 new Insets(
-                        12,
-                        22,
-                        12,
-                        24
+                        8,
+                        18,
+                        8,
+                        18
                 )
         );
 
@@ -1743,7 +1410,7 @@ public class App extends Application {
         );
 
         HBox cards =
-                new HBox(14);
+                new HBox(10);
 
         cards.setMaxWidth(
                 Double.MAX_VALUE
@@ -1762,7 +1429,7 @@ public class App extends Application {
 
                             int maxCards =
                                     Math.min(
-                                            5,
+                                            3,
                                             playlist.size()
                                     );
 
@@ -1793,9 +1460,7 @@ public class App extends Application {
                                                 )
                                         );
 
-                                name.setWrapText(
-                                        true
-                                );
+                                name.setWrapText(true);
 
                                 name.getStyleClass().add(
                                         "mini-name"
@@ -1810,14 +1475,14 @@ public class App extends Application {
 
                                 VBox text =
                                         new VBox(
-                                                3,
+                                                2,
                                                 name,
                                                 type
                                         );
 
                                 HBox card =
                                         new HBox(
-                                                8,
+                                                6,
                                                 icon,
                                                 text
                                         );
@@ -1852,7 +1517,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * CHOOSE MEDIA FILES
+     * CHOOSE MEDIA
      * =========================================================
      */
 
@@ -1862,22 +1527,46 @@ public class App extends Application {
                 new FileChooser();
 
         chooser.setTitle(
-                "Select Media Files"
+                "Select Audio or Video"
         );
-
-        /*
-         * AUDIO + VIDEO
-         */
 
         chooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter(
-                        "Media Files",
+                        "All Media Files",
                         "*.mp3",
                         "*.wav",
                         "*.m4a",
                         "*.aac",
+                        "*.aiff",
+                        "*.aif",
                         "*.mp4",
-                        "*.m4v"
+                        "*.m4v",
+                        "*.mov",
+                        "*.avi",
+                        "*.mkv",
+                        "*.wmv",
+                        "*.flv",
+                        "*.webm",
+                        "*.mpeg",
+                        "*.mpg",
+                        "*.3gp",
+                        "*.3g2",
+                        "*.ts",
+                        "*.m2ts",
+                        "*.mts",
+                        "*.ogv",
+                        "*.vob",
+                        "*.asf",
+                        "*.f4v",
+                        "*.m2v",
+                        "*.divx"
+                )
+        );
+
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(
+                        "All Files",
+                        "*.*"
                 )
         );
 
@@ -1894,26 +1583,23 @@ public class App extends Application {
             return;
         }
 
-        /*
-         * ADD FILES
-         */
+        boolean playlistWasEmpty =
+                playlist.isEmpty();
 
         for (File file : files) {
 
-            if (file != null
-                    && file.exists()
-                    && file.isFile()
-                    && !playlist.contains(file)) {
+            if (file == null
+                    || !file.exists()
+                    || !file.isFile()
+                    || playlist.contains(file)) {
 
-                playlist.add(file);
+                continue;
             }
+
+            playlist.add(file);
         }
 
-        /*
-         * AUTO PLAY FIRST FILE
-         */
-
-        if (currentIndex < 0
+        if (playlistWasEmpty
                 && !playlist.isEmpty()) {
 
             playlistView
@@ -1957,7 +1643,11 @@ public class App extends Application {
             );
 
             artistLabel.setText(
-                    "Nova Media Player"
+                    "Spotfire Media Player"
+            );
+
+            timeLabel.setText(
+                    "00:00 / 00:00"
             );
 
             return;
@@ -2005,24 +1695,21 @@ public class App extends Application {
         File file =
                 playlist.get(index);
 
-        /*
-         * FILE CHECK
-         */
-
-        if (!file.exists()
+        if (file == null
+                || !file.exists()
                 || !file.isFile()) {
 
             showError(
-                    "The selected file could not be found:\n\n"
-                            + file.getAbsolutePath()
+                    "The selected media file does not exist:\n\n"
+                            + (
+                            file != null
+                                    ? file.getAbsolutePath()
+                                    : "Unknown file"
+                    )
             );
 
             return;
         }
-
-        /*
-         * DISPOSE OLD PLAYER
-         */
 
         disposeCurrentPlayer();
 
@@ -2036,22 +1723,23 @@ public class App extends Application {
                 "00:00 / 00:00"
         );
 
-        /*
-         * CREATE MEDIA
-         *
-         * Local media uses file.toURI().
-         *
-         * This is NOT a hard-coded web URL.
-         */
+        boolean video =
+                isVideo(file);
 
-        Media media;
+        mediaView.setVisible(false);
+
+        emptyVideoLabel.setVisible(false);
+
+        hideAudioVisual();
+
+        final String source;
 
         try {
 
-            media =
-                    new Media(
-                            file.toURI().toString()
-                    );
+            source =
+                    file.toPath()
+                            .toUri()
+                            .toString();
 
         } catch (Exception ex) {
 
@@ -2063,9 +1751,32 @@ public class App extends Application {
             return;
         }
 
-        /*
-         * MEDIA ERROR
-         */
+        final Media media;
+
+        try {
+
+            media =
+                    new Media(source);
+
+        } catch (Exception ex) {
+
+            showMediaLoadError(
+                    file,
+                    ex
+            );
+
+            return;
+        }
+
+        if (media.getError() != null) {
+
+            showMediaErrorOnce(
+                    file,
+                    media.getError()
+            );
+
+            return;
+        }
 
         media.setOnError(
                 () -> showMediaErrorOnce(
@@ -2074,13 +1785,11 @@ public class App extends Application {
                 )
         );
 
-        /*
-         * CREATE MEDIA PLAYER
-         */
+        final MediaPlayer player;
 
         try {
 
-            mediaPlayer =
+            player =
                     new MediaPlayer(media);
 
         } catch (Exception ex) {
@@ -2093,31 +1802,16 @@ public class App extends Application {
             return;
         }
 
-        /*
-         * CONNECT MEDIA PLAYER TO MEDIA VIEW
-         */
+        mediaPlayer = player;
 
         mediaView.setMediaPlayer(
-                mediaPlayer
+                player
         );
 
-        /*
-         * =====================================================
-         * DISPLAY TYPE
-         * =====================================================
-         *
-         * VIDEO:
-         *     MediaView is shown.
-         *
-         * AUDIO:
-         *     Beautiful NOVA audio visualizer is shown.
-         */
+        mediaView.setPreserveRatio(true);
+        mediaView.setSmooth(true);
 
-        if (isVideo(file)) {
-
-            hideAudioVisual();
-
-            mediaView.setVisible(false);
+        if (video) {
 
             emptyVideoLabel.setText(
                     "Loading video..."
@@ -2125,32 +1819,18 @@ public class App extends Application {
 
             emptyVideoLabel.setVisible(true);
 
-        } else {
-
             mediaView.setVisible(false);
 
-            emptyVideoLabel.setVisible(false);
+        } else {
 
             showAudioVisual();
         }
 
-        /*
-         * =====================================================
-         * VOLUME
-         * =====================================================
-         */
-
-        mediaPlayer.setVolume(
+        player.setVolume(
                 muted
                         ? 0
                         : volume.getValue()
         );
-
-        /*
-         * =====================================================
-         * MEDIA INFORMATION
-         * =====================================================
-         */
 
         titleLabel.setText(
                 stripExtension(
@@ -2159,50 +1839,51 @@ public class App extends Application {
         );
 
         artistLabel.setText(
-                isVideo(file)
+                video
                         ? "Local Video"
                         : "Local Audio"
         );
 
-        /*
-         * =====================================================
-         * MEDIA READY
-         * =====================================================
-         */
-
-        mediaPlayer.setOnReady(
+        player.setOnReady(
                 () -> {
 
+                    if (mediaPlayer != player) {
+                        return;
+                    }
+
                     Duration total =
-                            mediaPlayer
-                                    .getTotalDuration();
+                            player.getTotalDuration();
 
                     updateTime(
                             Duration.ZERO,
                             total
                     );
 
-                    /*
-                     * VIDEO IS READY
-                     */
+                    if (video) {
 
-                    if (isVideo(file)) {
+                        mediaView.setMediaPlayer(
+                                player
+                        );
 
-                        hideAudioVisual();
-
-                        mediaView.setVisible(
+                        mediaView.setPreserveRatio(
                                 true
                         );
+
+                        mediaView.setSmooth(
+                                true
+                        );
+
+                        hideAudioVisual();
 
                         emptyVideoLabel.setVisible(
                                 false
                         );
 
-                    } else {
+                        mediaView.setVisible(
+                                true
+                        );
 
-                        /*
-                         * AUDIO VISUALIZER
-                         */
+                    } else {
 
                         mediaView.setVisible(
                                 false
@@ -2215,36 +1896,20 @@ public class App extends Application {
                         showAudioVisual();
                     }
 
-                    /*
-                     * START PLAYBACK
-                     */
-
-                    mediaPlayer.play();
-
-                    playPause.setText(
-                            "Ⅱ"
-                    );
+                    player.play();
                 }
         );
 
-        /*
-         * =====================================================
-         * CURRENT TIME
-         * =====================================================
-         */
-
-        mediaPlayer
-                .currentTimeProperty()
+        player.currentTimeProperty()
                 .addListener(
                         (obs, oldValue, newValue) -> {
 
-                            if (mediaPlayer == null) {
+                            if (mediaPlayer != player) {
                                 return;
                             }
 
                             Duration total =
-                                    mediaPlayer
-                                            .getTotalDuration();
+                                    player.getTotalDuration();
 
                             if (total == null
                                     || total.isUnknown()
@@ -2283,50 +1948,44 @@ public class App extends Application {
                                     total
                             );
                         }
-        );
+                );
 
-        /*
-         * =====================================================
-         * END OF MEDIA
-         * =====================================================
-         */
-
-        mediaPlayer.setOnEndOfMedia(
+        player.setOnEndOfMedia(
                 this::playNext
         );
 
-        /*
-         * =====================================================
-         * PLAYER ERROR
-         * =====================================================
-         */
-
-        mediaPlayer.setOnError(
+        player.setOnError(
                 () -> showMediaErrorOnce(
                         file,
-                        mediaPlayer.getError()
+                        player.getError()
                 )
         );
 
-        /*
-         * =====================================================
-         * PLAYING
-         * =====================================================
-         */
-
-        mediaPlayer.setOnPlaying(
+        player.setOnPlaying(
                 () -> {
+
+                    if (mediaPlayer != player) {
+                        return;
+                    }
 
                     playPause.setText(
                             "Ⅱ"
                     );
 
-                    if (isVideo(file)) {
+                    if (video) {
 
                         hideAudioVisual();
 
+                        mediaView.setMediaPlayer(
+                                player
+                        );
+
                         mediaView.setVisible(
                                 true
+                        );
+
+                        emptyVideoLabel.setVisible(
+                                false
                         );
 
                     } else {
@@ -2336,54 +1995,40 @@ public class App extends Application {
                 }
         );
 
-        /*
-         * =====================================================
-         * PAUSED
-         * =====================================================
-         */
-
-        mediaPlayer.setOnPaused(
+        player.setOnPaused(
                 () -> {
+
+                    if (mediaPlayer != player) {
+                        return;
+                    }
 
                     playPause.setText(
                             "▶"
                     );
 
-                    /*
-                     * Keep the beautiful visual visible
-                     * while audio is paused, but stop
-                     * the animation.
-                     */
+                    if (!video
+                            && audioAnimation != null) {
 
-                    if (!isVideo(file)) {
-
-                        if (audioAnimation != null) {
-
-                            audioAnimation.pause();
-                        }
+                        audioAnimation.pause();
                     }
                 }
         );
 
-        /*
-         * =====================================================
-         * STOPPED
-         * =====================================================
-         */
-
-        mediaPlayer.setOnStopped(
+        player.setOnStopped(
                 () -> {
+
+                    if (mediaPlayer != player) {
+                        return;
+                    }
 
                     playPause.setText(
                             "▶"
                     );
 
-                    if (!isVideo(file)) {
+                    if (!video
+                            && audioAnimation != null) {
 
-                        if (audioAnimation != null) {
-
-                            audioAnimation.pause();
-                        }
+                        audioAnimation.pause();
                     }
                 }
         );
@@ -2404,6 +2049,13 @@ public class App extends Application {
 
         audioVisual.setVisible(false);
 
+        try {
+
+            mediaView.setMediaPlayer(null);
+
+        } catch (Exception ignored) {
+        }
+
         if (mediaPlayer != null) {
 
             try {
@@ -2423,21 +2075,13 @@ public class App extends Application {
             mediaPlayer = null;
         }
 
-        mediaView.setMediaPlayer(
-                null
-        );
-
-        mediaView.setVisible(
-                false
-        );
+        mediaView.setVisible(false);
 
         emptyVideoLabel.setText(
                 "Choose a media file with  Add Media"
         );
 
-        emptyVideoLabel.setVisible(
-                true
-        );
+        emptyVideoLabel.setVisible(true);
 
         playPause.setText(
                 "▶"
@@ -2446,7 +2090,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * PLAY NEXT
+     * NEXT
      * =========================================================
      */
 
@@ -2476,7 +2120,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * PLAY PREVIOUS
+     * PREVIOUS
      * =========================================================
      */
 
@@ -2524,17 +2168,12 @@ public class App extends Application {
 
             mediaPlayer.pause();
 
-            playPause.setText(
-                    "▶"
-            );
-
-        } else {
+        } else if (
+                status != MediaPlayer.Status.DISPOSED
+                && status != MediaPlayer.Status.UNKNOWN
+        ) {
 
             mediaPlayer.play();
-
-            playPause.setText(
-                    "Ⅱ"
-            );
         }
     }
 
@@ -2569,7 +2208,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * SEEK FROM SLIDER
+     * SEEK
      * =========================================================
      */
 
@@ -2592,14 +2231,11 @@ public class App extends Application {
         }
 
         double value =
-                progress.getValue();
-
-        value =
                 Math.max(
                         0,
                         Math.min(
                                 1,
-                                value
+                                progress.getValue()
                         )
                 );
 
@@ -2610,7 +2246,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * PROGRESS VALUE
+     * PROGRESS
      * =========================================================
      */
 
@@ -2639,19 +2275,16 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * INCREASE VOLUME
+     * VOLUME UP
      * =========================================================
      */
 
     private void increaseVolume() {
 
-        double current =
-                volume.getValue();
-
         double newVolume =
                 Math.min(
                         1.0,
-                        current + 0.05
+                        volume.getValue() + 0.05
                 );
 
         if (muted) {
@@ -2676,29 +2309,20 @@ public class App extends Application {
                     newVolume
             );
         }
-
-        volumeLabel.setText(
-                Math.round(
-                        newVolume * 100
-                ) + "%"
-        );
     }
 
     /*
      * =========================================================
-     * DECREASE VOLUME
+     * VOLUME DOWN
      * =========================================================
      */
 
     private void decreaseVolume() {
 
-        double current =
-                volume.getValue();
-
         double newVolume =
                 Math.max(
                         0.0,
-                        current - 0.05
+                        volume.getValue() - 0.05
                 );
 
         if (muted) {
@@ -2723,12 +2347,6 @@ public class App extends Application {
                     newVolume
             );
         }
-
-        volumeLabel.setText(
-                Math.round(
-                        newVolume * 100
-                ) + "%"
-        );
     }
 
     /*
@@ -2748,9 +2366,7 @@ public class App extends Application {
 
             if (mediaPlayer != null) {
 
-                mediaPlayer.setVolume(
-                        0
-                );
+                mediaPlayer.setVolume(0);
             }
 
             mute.setText(
@@ -2782,29 +2398,17 @@ public class App extends Application {
      * =========================================================
      * KEYBOARD CONTROLS
      * =========================================================
-     *
-     * SPACE = PLAY / PAUSE
-     * S     = STOP
-     * N     = NEXT
-     * P     = PREVIOUS
-     * UP    = VOLUME UP
-     * DOWN  = VOLUME DOWN
-     * M     = MUTE / UNMUTE
      */
 
     private void installKeyboardControls(
             Scene scene) {
 
         scene.addEventFilter(
-                javafx.scene.input.KeyEvent.KEY_PRESSED,
+                KeyEvent.KEY_PRESSED,
                 event -> {
 
                     KeyCode code =
                             event.getCode();
-
-                    /*
-                     * CTRL + K
-                     */
 
                     if (event.isControlDown()
                             && code == KeyCode.K) {
@@ -2816,20 +2420,11 @@ public class App extends Application {
                         return;
                     }
 
-                    /*
-                     * Do not steal normal typing
-                     * from text fields.
-                     */
-
                     if (event.getTarget()
                             instanceof TextInputControl) {
 
                         return;
                     }
-
-                    /*
-                     * SPACE
-                     */
 
                     if (code == KeyCode.SPACE) {
 
@@ -2837,92 +2432,44 @@ public class App extends Application {
 
                         event.consume();
 
-                        return;
-                    }
-
-                    /*
-                     * S
-                     */
-
-                    if (code == KeyCode.S) {
+                    } else if (code == KeyCode.S) {
 
                         stopPlayback();
 
                         event.consume();
 
-                        return;
-                    }
-
-                    /*
-                     * N
-                     */
-
-                    if (code == KeyCode.N) {
+                    } else if (code == KeyCode.N) {
 
                         playNext();
 
                         event.consume();
 
-                        return;
-                    }
-
-                    /*
-                     * P
-                     */
-
-                    if (code == KeyCode.P) {
+                    } else if (code == KeyCode.P) {
 
                         playPrevious();
 
                         event.consume();
 
-                        return;
-                    }
-
-                    /*
-                     * UP
-                     */
-
-                    if (code == KeyCode.UP) {
+                    } else if (code == KeyCode.UP) {
 
                         increaseVolume();
 
                         event.consume();
 
-                        return;
-                    }
-
-                    /*
-                     * DOWN
-                     */
-
-                    if (code == KeyCode.DOWN) {
+                    } else if (code == KeyCode.DOWN) {
 
                         decreaseVolume();
 
                         event.consume();
 
-                        return;
-                    }
-
-                    /*
-                     * M
-                     */
-
-                    if (code == KeyCode.M) {
+                    } else if (code == KeyCode.M) {
 
                         toggleMute();
 
                         event.consume();
-
-                        return;
                     }
                 }
         );
-
-        /*
-         * PROGRESS SLIDER
-         */
 
         progress.valueChangingProperty()
                 .addListener(
@@ -2935,10 +2482,6 @@ public class App extends Application {
                             }
                         }
                 );
-
-        /*
-         * Clicking progress bar seeks immediately.
-         */
 
         progress.setOnMouseReleased(
                 event -> {
@@ -2953,7 +2496,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * SEARCH / FILTER
+     * SEARCH
      * =========================================================
      */
 
@@ -2968,7 +2511,9 @@ public class App extends Application {
 
         String text =
                 query.trim()
-                        .toLowerCase();
+                        .toLowerCase(
+                                Locale.ROOT
+                        );
 
         for (int i = 0;
              i < playlist.size();
@@ -2978,15 +2523,16 @@ public class App extends Application {
                     playlist.get(i);
 
             if (file.getName()
-                    .toLowerCase()
+                    .toLowerCase(
+                            Locale.ROOT
+                    )
                     .contains(text)) {
 
                 playlistView
                         .getSelectionModel()
                         .select(i);
 
-                playlistView
-                        .scrollTo(i);
+                playlistView.scrollTo(i);
 
                 return;
             }
@@ -2995,7 +2541,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * TIME DISPLAY
+     * TIME
      * =========================================================
      */
 
@@ -3009,12 +2555,6 @@ public class App extends Application {
                         + formatDuration(total)
         );
     }
-
-    /*
-     * =========================================================
-     * FORMAT DURATION
-     * =========================================================
-     */
 
     private String formatDuration(
             Duration duration) {
@@ -3062,7 +2602,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * MEDIA TYPE
+     * VIDEO DETECTION
      * =========================================================
      */
 
@@ -3074,10 +2614,31 @@ public class App extends Application {
 
         String name =
                 file.getName()
-                        .toLowerCase();
+                        .toLowerCase(
+                                Locale.ROOT
+                        );
 
         return name.endsWith(".mp4")
-                || name.endsWith(".m4v");
+                || name.endsWith(".m4v")
+                || name.endsWith(".mov")
+                || name.endsWith(".avi")
+                || name.endsWith(".mkv")
+                || name.endsWith(".wmv")
+                || name.endsWith(".flv")
+                || name.endsWith(".webm")
+                || name.endsWith(".mpeg")
+                || name.endsWith(".mpg")
+                || name.endsWith(".3gp")
+                || name.endsWith(".3g2")
+                || name.endsWith(".ts")
+                || name.endsWith(".m2ts")
+                || name.endsWith(".mts")
+                || name.endsWith(".ogv")
+                || name.endsWith(".vob")
+                || name.endsWith(".asf")
+                || name.endsWith(".f4v")
+                || name.endsWith(".m2v")
+                || name.endsWith(".divx");
     }
 
     /*
@@ -3096,10 +2657,20 @@ public class App extends Application {
 
         mediaErrorShown = true;
 
-        String reason =
-                error != null
-                        ? error.getMessage()
-                        : "JavaFX could not decode the media.";
+        String reason;
+
+        if (error != null
+                && error.getMessage() != null
+                && !error.getMessage().isBlank()) {
+
+            reason =
+                    error.getMessage();
+
+        } else {
+
+            reason =
+                    "JavaFX reported ERROR_MEDIA_INVALID.";
+        }
 
         showError(
                 buildMediaErrorMessage(
@@ -3119,10 +2690,20 @@ public class App extends Application {
             File file,
             Exception exception) {
 
-        String reason =
-                exception != null
-                        ? exception.getMessage()
-                        : "Unknown error";
+        String reason;
+
+        if (exception != null
+                && exception.getMessage() != null
+                && !exception.getMessage().isBlank()) {
+
+            reason =
+                    exception.getMessage();
+
+        } else {
+
+            reason =
+                    "JavaFX could not open the media file.";
+        }
 
         showError(
                 buildMediaErrorMessage(
@@ -3134,7 +2715,7 @@ public class App extends Application {
 
     /*
      * =========================================================
-     * BUILD MEDIA ERROR
+     * MEDIA ERROR MESSAGE
      * =========================================================
      */
 
@@ -3165,32 +2746,27 @@ public class App extends Application {
 
         message.append(
                 reason != null
+                        && !reason.isBlank()
                         ? reason
-                        : "Unknown media error."
+                        : "JavaFX could not decode the media."
         );
 
-        if (file != null
-                && isVideo(file)) {
+        message.append(
+                "\n\n"
+        );
 
-            message.append(
-                    "\n\n"
-                            + "For JavaFX video playback, use:\n"
-                            + "• MP4 container\n"
-                            + "• H.264 / AVC video\n"
-                            + "• AAC audio\n"
-                            + "• 8-bit YUV 4:2:0 video\n\n"
-                            + "If this MP4 still fails, its encoding "
-                            + "may contain a feature that the JavaFX "
-                            + "media engine cannot decode."
-            );
-        }
+        message.append(
+                "The file was accepted by SPOTFIRE. "
+                        + "JavaFX is attempting to play it "
+                        + "using its built-in media engine."
+        );
 
         return message.toString();
     }
 
     /*
      * =========================================================
-     * EXTENSION
+     * FILE NAME
      * =========================================================
      */
 
@@ -3227,14 +2803,14 @@ public class App extends Application {
                 new Alert(
                         Alert.AlertType.INFORMATION,
                         "Playlist categories are available "
-                                + "in the NOVA interface.\n\n"
-                                + "Use Add Media to add your local "
-                                + "audio and video files.",
+                                + "in the SPOTFIRE interface.\n\n"
+                                + "Use Add Media to add your "
+                                + "local audio and video files.",
                         ButtonType.OK
                 );
 
         alert.setTitle(
-                "NOVA Playlists"
+                "SPOTFIRE Playlists"
         );
 
         alert.setHeaderText(
@@ -3261,7 +2837,7 @@ public class App extends Application {
                 );
 
         alert.setTitle(
-                "NOVA Media Player"
+                "SPOTFIRE Media Player"
         );
 
         alert.setHeaderText(
